@@ -3,11 +3,9 @@ import { Perennials } from "./features/perennials/Perennials"
 
 const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <Perennials />
-      </header>
-    </div>
+    <header className="bg-white p-4">
+      <Perennials />
+    </header>
   )
 }
 

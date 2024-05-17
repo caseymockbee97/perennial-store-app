@@ -1,33 +1,13 @@
-import { useMemo, useState } from "react"
-import { useAppDispatch, useAppSelector } from "../../app/hooks"
-import { selectCart, selectItems } from "./perennialsSlice"
-import { ItemDisplay } from "./ItemDisplay"
-import { CartItemDisplay } from "./CartItemDisplay"
+import { Items } from "./Items"
+
+import { useState } from "react"
+import { selectCart } from "./perennialsSlice"
+import { useAppSelector } from "../../app/hooks"
+import { CartList } from "./CartList"
 
 export const Perennials = () => {
-  const dispatch = useAppDispatch()
+  const [cartIsOpen, setCartIsOpen] = useState(false)
   const cart = useAppSelector(selectCart)
-  const items = useAppSelector(selectItems)
-  const [search, setSearch] = useState("")
-
-  const filteredItems = useMemo(() => {
-    return items
-      .filter(({ value, d, p }) => {
-        if (!p) {
-          return false
-        }
-
-        const normalizedSearch = search.toLocaleLowerCase()
-
-        return (
-          value.toLocaleLowerCase().includes(normalizedSearch) ||
-          d.toLocaleLowerCase().includes(normalizedSearch)
-        )
-      })
-      .sort((a, b) => a.p - b.p)
-  }, [items, search])
-
-  const cartItems = Object.values(cart)
 
   const cartTotal = Object.values(cart).reduce((acc, cur) => {
     const itemTotal = cur.item.p * cur.count
@@ -37,31 +17,20 @@ export const Perennials = () => {
 
   return (
     <div>
-      <h2>Cart - ${cartTotal}</h2>
-      {cartItems.length ? (
-        cartItems.map(cartItem => (
-          <CartItemDisplay
-            cartItem={cartItem}
-            key={cartItem.item.value + cartItem.item.d + cartItem.item.p}
-          />
-        ))
-      ) : (
-        <p>Cart is empty</p>
-      )}
-      <label htmlFor="search">Search</label>
-      <input
-        type="text"
-        onChange={e => setSearch(e.target.value)}
-        value={search}
-        id="search"
-      />
-      {filteredItems.length ? (
-        filteredItems.map(item => (
-          <ItemDisplay item={item} key={item.value + item.d + item.p} />
-        ))
-      ) : (
-        <p>Nothing matches that search</p>
-      )}
+      <div className="flex justify-between">
+        <h1 className="text-3xl font-bold inline">Perennials Estimator</h1>
+
+        <button
+          className="bg-gray-200 hover:bg-gray-300 py-2 px-4 rounded-md text-md"
+          onClick={() => setCartIsOpen(prev => !prev)}
+        >
+          {cartIsOpen ? "Hide" : "Show"} Cart - ${cartTotal}
+        </button>
+      </div>
+
+      {cartIsOpen && <CartList />}
+
+      <Items />
     </div>
   )
 }
